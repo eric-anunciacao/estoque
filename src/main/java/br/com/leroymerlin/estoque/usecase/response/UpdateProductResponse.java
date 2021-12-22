@@ -1,12 +1,9 @@
-package br.com.leroymerlin.estoque.domain.dto;
+package br.com.leroymerlin.estoque.usecase.response;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-
-import br.com.leroymerlin.estoque.cross.ObjectMapperUtils;
-
-public class ImportProductDto {
+public class UpdateProductResponse {
 
 	private Long lm;
 	private String name;
@@ -14,15 +11,17 @@ public class ImportProductDto {
 	private String description;
 	private BigDecimal price;
 	private String category;
+	private LocalDateTime updatedAt;
 
-	public ImportProductDto(Long lm, String name, boolean freeShipping, String description, BigDecimal price,
-			String category) {
+	public UpdateProductResponse(Long lm, String name, boolean freeShipping, String description, BigDecimal price,
+			String category, LocalDateTime updatedAt) {
 		this.lm = lm;
 		this.name = name;
 		this.freeShipping = freeShipping;
 		this.description = description;
 		this.price = price;
 		this.category = category;
+		this.updatedAt = updatedAt;
 	}
 
 	public Long getLm() {
@@ -49,14 +48,8 @@ public class ImportProductDto {
 		return category;
 	}
 
-	@Override
-	public String toString() {
-		try {
-			return ObjectMapperUtils.MAPPER.writeValueAsString(this);
-		} catch (JsonProcessingException e) {
-			return "ImportProductDto [lm=" + lm + ", name=" + name + ", freeShipping=" + freeShipping + ", description="
-					+ description + ", price=" + price + ", category=" + category + "]";
-		}
+	public LocalDateTime getUpdatedAt() {
+		return updatedAt;
 	}
 
 }

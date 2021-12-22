@@ -1,12 +1,8 @@
-package br.com.leroymerlin.estoque.domain.dto;
+package br.com.leroymerlin.estoque.usecase.request;
 
 import java.math.BigDecimal;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-
-import br.com.leroymerlin.estoque.cross.ObjectMapperUtils;
-
-public class ImportProductDto {
+public class UpdateProductRequest {
 
 	private Long lm;
 	private String name;
@@ -15,9 +11,8 @@ public class ImportProductDto {
 	private BigDecimal price;
 	private String category;
 
-	public ImportProductDto(Long lm, String name, boolean freeShipping, String description, BigDecimal price,
+	public UpdateProductRequest(String name, boolean freeShipping, String description, BigDecimal price,
 			String category) {
-		this.lm = lm;
 		this.name = name;
 		this.freeShipping = freeShipping;
 		this.description = description;
@@ -27,6 +22,10 @@ public class ImportProductDto {
 
 	public Long getLm() {
 		return lm;
+	}
+
+	public void setLm(Long lm) {
+		this.lm = lm;
 	}
 
 	public String getName() {
@@ -47,16 +46,6 @@ public class ImportProductDto {
 
 	public String getCategory() {
 		return category;
-	}
-
-	@Override
-	public String toString() {
-		try {
-			return ObjectMapperUtils.MAPPER.writeValueAsString(this);
-		} catch (JsonProcessingException e) {
-			return "ImportProductDto [lm=" + lm + ", name=" + name + ", freeShipping=" + freeShipping + ", description="
-					+ description + ", price=" + price + ", category=" + category + "]";
-		}
 	}
 
 }

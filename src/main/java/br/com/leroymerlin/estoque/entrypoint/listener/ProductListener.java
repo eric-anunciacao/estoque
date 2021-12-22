@@ -1,9 +1,10 @@
 package br.com.leroymerlin.estoque.entrypoint.listener;
 
-import java.io.IOException;
+import java.sql.SQLException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
@@ -16,6 +17,9 @@ import br.com.leroymerlin.estoque.usecase.request.SaveProductRequest;
 public class ProductListener {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProductListener.class);
+
+	@Value("${queue.name}")
+	private String queueName;
 
 	private final JmsTemplate jmsTemplate;
 	private final SaveProductUseCase saveProductUseCase;
@@ -32,11 +36,19 @@ public class ProductListener {
 			var request = ObjectMapperUtils.MAPPER.readValue(message, SaveProductRequest.class);
 			saveProductUseCase.save(request);
 			LOGGER.info("Product saved successfully!");
-		} catch (IOException e) {
+		} catch (Exception e) {
 			LOGGER.error("Error converting message", e);
-			// TODO tratar mensagem
-			jmsTemplate.convertAndSend("???", message);
+			process(message, e);
 		}
+	}
+
+	private void process(String message, Exception e) {
+		// TODO tratar mensagem
+		var destination = "????";
+		if (e instanceof SQLException) {
+			destination = queueName;
+		}
+		jmsTemplate.convertAndSend(destination, message);
 	}
 
 }
