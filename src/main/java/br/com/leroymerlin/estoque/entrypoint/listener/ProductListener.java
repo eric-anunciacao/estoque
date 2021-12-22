@@ -18,8 +18,11 @@ public class ProductListener {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProductListener.class);
 
-	@Value("${queue.name}")
-	private String queueName;
+	@Value("${product.queue.name}")
+	private String productQueueName;
+
+	@Value("${product.dont.saved.queue.name}")
+	private String productDontSavedQueueName;
 
 	private final JmsTemplate jmsTemplate;
 	private final SaveProductUseCase saveProductUseCase;
@@ -29,7 +32,7 @@ public class ProductListener {
 		this.jmsTemplate = jmsTemplate;
 	}
 
-	@JmsListener(destination = "${queue.name}")
+	@JmsListener(destination = "${product.queue.name}")
 	public void read(String message) {
 		try {
 			LOGGER.info("Consuming message: {}", message);
@@ -43,10 +46,9 @@ public class ProductListener {
 	}
 
 	private void process(String message, Exception e) {
-		// TODO tratar mensagem
-		var destination = "????";
+		var destination = productDontSavedQueueName;
 		if (e instanceof SQLException) {
-			destination = queueName;
+			destination = productQueueName;
 		}
 		jmsTemplate.convertAndSend(destination, message);
 	}

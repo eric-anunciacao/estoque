@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import br.com.leroymerlin.estoque.cross.ObjectMapperUtils;
+import br.com.leroymerlin.estoque.infra.config.exception.JSONConverterException;
 
 public class ImportProductDto {
 
@@ -54,8 +55,7 @@ public class ImportProductDto {
 		try {
 			return ObjectMapperUtils.MAPPER.writeValueAsString(this);
 		} catch (JsonProcessingException e) {
-			return "ImportProductDto [lm=" + lm + ", name=" + name + ", freeShipping=" + freeShipping + ", description="
-					+ description + ", price=" + price + ", category=" + category + "]";
+			throw new JSONConverterException("Error converting to JSON", e);
 		}
 	}
 

@@ -13,7 +13,7 @@ import br.com.leroymerlin.estoque.domain.gateway.ImportProductGateway;
 @Component
 class ImportProductDataProvider implements ImportProductGateway {
 
-	@Value("${queue.name}")
+	@Value("${product.queue.name}")
 	private String queueName;
 
 	private final JmsTemplate jmsTemplate;
