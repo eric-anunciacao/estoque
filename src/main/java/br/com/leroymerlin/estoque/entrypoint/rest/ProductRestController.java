@@ -22,9 +22,11 @@ import br.com.leroymerlin.estoque.usecase.FindAllProductsUseCase;
 import br.com.leroymerlin.estoque.usecase.FindProductByIdUseCase;
 import br.com.leroymerlin.estoque.usecase.ImportProductUseCase;
 import br.com.leroymerlin.estoque.usecase.PartialUpdateProductUseCase;
+import br.com.leroymerlin.estoque.usecase.RegisterFileImportUseCase;
 import br.com.leroymerlin.estoque.usecase.UpdateProductUseCase;
 import br.com.leroymerlin.estoque.usecase.request.ImportProductRequest;
 import br.com.leroymerlin.estoque.usecase.request.PartialUpdateProductRequest;
+import br.com.leroymerlin.estoque.usecase.request.ImportFileRequest;
 import br.com.leroymerlin.estoque.usecase.request.UpdateProductRequest;
 
 @RestController
@@ -37,17 +39,20 @@ public class ProductRestController {
 	private final DeleteProductUseCase deleteProductUseCase;
 	private final UpdateProductUseCase updateProductUseCase;
 	private final PartialUpdateProductUseCase partialUpdateProductUseCase;
+	private final RegisterFileImportUseCase registerFileImportUseCase;
 
 	public ProductRestController(final ImportProductUseCase importProductUseCase,
 			final FindAllProductsUseCase findAllProductsUseCase, final FindProductByIdUseCase findProductByLmUseCase,
 			final DeleteProductUseCase deleteProductUseCase, final UpdateProductUseCase updateProductUseCase,
-			final PartialUpdateProductUseCase partialUpdateProductUseCase) {
+			final PartialUpdateProductUseCase partialUpdateProductUseCase,
+			final RegisterFileImportUseCase registerFileImportUseCase) {
 		this.importProductUseCase = importProductUseCase;
 		this.findAllProductsUseCase = findAllProductsUseCase;
 		this.findProductByIdUseCase = findProductByLmUseCase;
 		this.deleteProductUseCase = deleteProductUseCase;
 		this.updateProductUseCase = updateProductUseCase;
 		this.partialUpdateProductUseCase = partialUpdateProductUseCase;
+		this.registerFileImportUseCase = registerFileImportUseCase;
 	}
 
 	// TODO endpoint que informe se a planinha foi processada com sucesso ou não
@@ -55,6 +60,10 @@ public class ProductRestController {
 	@PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Object> upload(@RequestParam("file") MultipartFile file) throws IOException {
 		var request = CSVUtils.convert(file.getInputStream(), ImportProductRequest.class);
+
+		var fileRequest = new ImportFileRequest(file.getOriginalFilename(), request.stream().count());
+		this.registerFileImportUseCase.register(fileRequest);
+
 		this.importProductUseCase.execute(request);
 		return ResponseEntity.ok().build();
 	}
