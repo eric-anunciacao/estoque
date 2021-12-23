@@ -8,4 +8,6 @@ public interface FileGateway {
 
 	void incrementPersistedRecordsFor(Long fileId);
 
+	String getFileStatus(Long id);
+
 }

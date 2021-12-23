@@ -37,6 +37,7 @@ import br.com.leroymerlin.estoque.usecase.response.ProductResponse;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class ProductRestControllerTest {
 
+	private static final String HOST = "localhost";
 	private static final String ID = "/1001";
 
 	@Autowired
@@ -55,7 +56,7 @@ class ProductRestControllerTest {
 	void shouldGetNoContentWhenCallAllProducts() throws InterruptedException {
 		var entity = new HttpEntity<String>(null, new HttpHeaders());
 
-		var response = restTemplate.exchange(getBaseUrl(), HttpMethod.GET, entity, String.class);
+		var response = restTemplate.exchange(getProductBaseUrl(), HttpMethod.GET, entity, String.class);
 
 		assertNotNull(response);
 		assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
@@ -73,7 +74,7 @@ class ProductRestControllerTest {
 		body.add("file", file.getResource());
 
 		var entity = new HttpEntity<MultiValueMap<String, Object>>(body, headers);
-		var response = restTemplate.postForEntity(getBaseUrl(), entity, String.class);
+		var response = restTemplate.postForEntity(getFileBaseUrl(), entity, String.class);
 
 		assertNotNull(response);
 		assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -85,7 +86,7 @@ class ProductRestControllerTest {
 		Thread.sleep(2000);
 		var entity = new HttpEntity<String>(null, new HttpHeaders());
 
-		var response = restTemplate.exchange(getBaseUrl(), HttpMethod.GET, entity, String.class);
+		var response = restTemplate.exchange(getProductBaseUrl(), HttpMethod.GET, entity, String.class);
 
 		assertNotNull(response.getBody());
 		assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -94,7 +95,7 @@ class ProductRestControllerTest {
 	@Test
 	@Order(4)
 	void shouldGetProductById() {
-		var product = restTemplate.getForObject(getBaseUrl().concat(ID), ProductResponse.class);
+		var product = restTemplate.getForObject(getProductBaseUrl().concat(ID), ProductResponse.class);
 
 		assertNotNull(product);
 		assertEquals("Furadeira X", product.getName());
@@ -106,9 +107,9 @@ class ProductRestControllerTest {
 		var request = new UpdateProductRequest("Updating name", true, "Updating description", new BigDecimal("1.00"),
 				"00001");
 
-		restTemplate.put(getBaseUrl().concat(ID), request);
+		restTemplate.put(getProductBaseUrl().concat(ID), request);
 
-		var product = restTemplate.getForObject(getBaseUrl().concat(ID), ProductResponse.class);
+		var product = restTemplate.getForObject(getProductBaseUrl().concat(ID), ProductResponse.class);
 
 		assertNotNull(product);
 		assertEquals(request.getName(), product.getName());
@@ -125,12 +126,13 @@ class ProductRestControllerTest {
 		var request = new PartialUpdateProductRequest(null, null, null, price, null);
 
 		final var requestEntity = new HttpEntity<>(request);
-		var response = restTemplate.exchange(getBaseUrl().concat(ID), HttpMethod.PATCH, requestEntity, String.class);
+		var response = restTemplate.exchange(getProductBaseUrl().concat(ID), HttpMethod.PATCH, requestEntity,
+				String.class);
 
 		assertNotNull(response);
 		assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
 
-		var product = restTemplate.getForObject(getBaseUrl().concat(ID), ProductResponse.class);
+		var product = restTemplate.getForObject(getProductBaseUrl().concat(ID), ProductResponse.class);
 
 		assertNotNull(product);
 		assertNotNull(product.getName());
@@ -140,10 +142,10 @@ class ProductRestControllerTest {
 	@Test
 	@Order(7)
 	void shouldDeleteProduct() {
-		restTemplate.delete(getBaseUrl().concat(ID));
+		restTemplate.delete(getProductBaseUrl().concat(ID));
 
 		var entity = new HttpEntity<String>(null, new HttpHeaders());
-		var response = restTemplate.exchange(getBaseUrl().concat(ID), HttpMethod.GET, entity, String.class);
+		var response = restTemplate.exchange(getProductBaseUrl().concat(ID), HttpMethod.GET, entity, String.class);
 
 		assertNotNull(response);
 		assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
@@ -153,7 +155,8 @@ class ProductRestControllerTest {
 	@Order(8)
 	void shouldThrowAnErrorWhenDeleteProduct() {
 		var entity = new HttpEntity<String>(null, new HttpHeaders());
-		var response = restTemplate.exchange(getBaseUrl().concat("/9999"), HttpMethod.DELETE, entity, String.class);
+		var response = restTemplate.exchange(getProductBaseUrl().concat("/9999"), HttpMethod.DELETE, entity,
+				String.class);
 
 		assertNotNull(response);
 		assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
@@ -165,14 +168,23 @@ class ProductRestControllerTest {
 		var request = new PartialUpdateProductRequest(null, null, null, new BigDecimal("777.77"), null);
 
 		final var requestEntity = new HttpEntity<>(request);
-		var response = restTemplate.exchange(getBaseUrl().concat("/9999"), HttpMethod.PATCH, requestEntity,
+		var response = restTemplate.exchange(getProductBaseUrl().concat("/9999"), HttpMethod.PATCH, requestEntity,
 				String.class);
 
 		assertNotNull(response);
 		assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
 	}
 
-	private String getBaseUrl() {
-		return String.format("http://localhost:%s/products", port);
+	private String getProductBaseUrl() {
+		return getBaseUrl("products");
 	}
+
+	private String getFileBaseUrl() {
+		return getBaseUrl("files");
+	}
+
+	private String getBaseUrl(String source) {
+		return String.format("http://%s:%s/%s", HOST, port, source);
+	}
+
 }

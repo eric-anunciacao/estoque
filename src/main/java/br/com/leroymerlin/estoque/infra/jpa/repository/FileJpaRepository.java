@@ -15,4 +15,9 @@ public interface FileJpaRepository extends CrudRepository<FileJpa, Long> {
 	@Query("UPDATE FileJpa f SET f.persistedRecords = (NVL(f.persistedRecords, 0) + 1) WHERE f.id = :id")
 	void incrementPersistedRecordsFor(@Param("id") Long id);
 
+	@Query("SELECT CASE WHEN f.totalRecords = f.persistedRecords THEN 'PROCESSED' "
+			+ "WHEN f.totalRecords > f.persistedRecords AND size(f.problems) > 0 THEN 'PROCESSED_WITH_ERROR' "
+			+ "ELSE 'PROCESSING' END FROM FileJpa f WHERE f.id = :id")
+	String getStatus(@Param("id") Long id);
+
 }

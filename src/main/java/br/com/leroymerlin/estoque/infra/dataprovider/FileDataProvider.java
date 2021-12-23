@@ -30,4 +30,9 @@ class FileDataProvider implements FileGateway {
 		this.repository.incrementPersistedRecordsFor(fileId);
 	}
 
+	@Override
+	public String getFileStatus(Long id) {
+		return this.repository.getStatus(id);
+	}
+
 }

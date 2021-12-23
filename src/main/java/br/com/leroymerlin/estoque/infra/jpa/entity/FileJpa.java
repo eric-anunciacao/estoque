@@ -2,12 +2,14 @@ package br.com.leroymerlin.estoque.infra.jpa.entity;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -32,6 +34,9 @@ public class FileJpa implements Serializable {
 
 	@UpdateTimestamp
 	private LocalDateTime updatedAt;
+	
+	@OneToMany(mappedBy = "file")
+	private Set<FileProblemJpa> problems;
 
 	public Long getId() {
 		return id;
@@ -79,6 +84,14 @@ public class FileJpa implements Serializable {
 
 	public void setUpdatedAt(LocalDateTime updatedAt) {
 		this.updatedAt = updatedAt;
+	}
+
+	public Set<FileProblemJpa> getProblems() {
+		return problems;
+	}
+
+	public void setProblems(Set<FileProblemJpa> problems) {
+		this.problems = problems;
 	}
 
 	@Override
