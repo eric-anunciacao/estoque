@@ -6,6 +6,6 @@ import br.com.leroymerlin.estoque.domain.dto.ImportProductDto;
 
 public interface ImportProductGateway {
 
-	void sendToQueue(List<ImportProductDto> products);
+	void sendToQueue(Long fileId, List<ImportProductDto> products);
 
 }

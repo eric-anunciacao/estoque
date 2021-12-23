@@ -2,8 +2,8 @@ package br.com.leroymerlin.estoque.usecase;
 
 import br.com.leroymerlin.estoque.usecase.request.ImportFileRequest;
 
-public interface RegisterFileImportUseCase {
+public interface LogFileImportUseCase {
 
-	void register(ImportFileRequest fileRequest);
+	Long log(ImportFileRequest request);
 
 }

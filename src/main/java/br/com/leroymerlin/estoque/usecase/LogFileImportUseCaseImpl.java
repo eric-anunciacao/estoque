@@ -7,18 +7,18 @@ import br.com.leroymerlin.estoque.domain.gateway.FileGateway;
 import br.com.leroymerlin.estoque.usecase.request.ImportFileRequest;
 
 @Component
-class RegisterFileImportUseCaseImpl implements RegisterFileImportUseCase {
+class LogFileImportUseCaseImpl implements LogFileImportUseCase {
 
 	private final FileGateway gateway;
 
-	public RegisterFileImportUseCaseImpl(FileGateway gateway) {
+	public LogFileImportUseCaseImpl(FileGateway gateway) {
 		this.gateway = gateway;
 	}
 
 	@Override
-	public void register(ImportFileRequest request) {
+	public Long log(ImportFileRequest request) {
 		var dto = new SaveFileDto(request.getFilename(), request.getNumberOfRecords());
-		this.gateway.save(dto);
+		return this.gateway.save(dto);
 	}
 
 }

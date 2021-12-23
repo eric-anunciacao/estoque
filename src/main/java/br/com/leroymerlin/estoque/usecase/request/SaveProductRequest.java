@@ -3,6 +3,7 @@ package br.com.leroymerlin.estoque.usecase.request;
 import java.math.BigDecimal;
 
 public class SaveProductRequest {
+
 	private Long lm;
 	private String name;
 	private boolean freeShipping;

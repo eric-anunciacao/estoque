@@ -18,9 +18,9 @@ class ImportProductUseCaseImpl implements ImportProductUseCase {
 	}
 
 	@Override
-	public void execute(List<ImportProductRequest> request) {
+	public void execute(Long fileId, List<ImportProductRequest> request) {
 		var productsDto = ImportProductDtoMapper.INSTANCE.toDto(request);
-		gateway.sendToQueue(productsDto);
+		gateway.sendToQueue(fileId, productsDto);
 	}
 
 }

@@ -20,8 +20,14 @@ class FileDataProvider implements FileGateway {
 
 	@Override
 	@Transactional
-	public void save(SaveFileDto dto) {
-		this.repository.save(FileJpaMapper.INSTANCE.toJpa(dto));
+	public Long save(SaveFileDto dto) {
+		return this.repository.save(FileJpaMapper.INSTANCE.toJpa(dto)).getId();
+	}
+
+	@Override
+	@Transactional
+	public void incrementPersistedRecordsFor(Long fileId) {
+		this.repository.incrementPersistedRecordsFor(fileId);
 	}
 
 }

@@ -22,7 +22,7 @@ import br.com.leroymerlin.estoque.usecase.FindAllProductsUseCase;
 import br.com.leroymerlin.estoque.usecase.FindProductByIdUseCase;
 import br.com.leroymerlin.estoque.usecase.ImportProductUseCase;
 import br.com.leroymerlin.estoque.usecase.PartialUpdateProductUseCase;
-import br.com.leroymerlin.estoque.usecase.RegisterFileImportUseCase;
+import br.com.leroymerlin.estoque.usecase.LogFileImportUseCase;
 import br.com.leroymerlin.estoque.usecase.UpdateProductUseCase;
 import br.com.leroymerlin.estoque.usecase.request.ImportProductRequest;
 import br.com.leroymerlin.estoque.usecase.request.PartialUpdateProductRequest;
@@ -39,20 +39,20 @@ public class ProductRestController {
 	private final DeleteProductUseCase deleteProductUseCase;
 	private final UpdateProductUseCase updateProductUseCase;
 	private final PartialUpdateProductUseCase partialUpdateProductUseCase;
-	private final RegisterFileImportUseCase registerFileImportUseCase;
+	private final LogFileImportUseCase logFileImportUseCase;
 
 	public ProductRestController(final ImportProductUseCase importProductUseCase,
 			final FindAllProductsUseCase findAllProductsUseCase, final FindProductByIdUseCase findProductByLmUseCase,
 			final DeleteProductUseCase deleteProductUseCase, final UpdateProductUseCase updateProductUseCase,
 			final PartialUpdateProductUseCase partialUpdateProductUseCase,
-			final RegisterFileImportUseCase registerFileImportUseCase) {
+			final LogFileImportUseCase logFileImportUseCase) {
 		this.importProductUseCase = importProductUseCase;
 		this.findAllProductsUseCase = findAllProductsUseCase;
 		this.findProductByIdUseCase = findProductByLmUseCase;
 		this.deleteProductUseCase = deleteProductUseCase;
 		this.updateProductUseCase = updateProductUseCase;
 		this.partialUpdateProductUseCase = partialUpdateProductUseCase;
-		this.registerFileImportUseCase = registerFileImportUseCase;
+		this.logFileImportUseCase = logFileImportUseCase;
 	}
 
 	// TODO endpoint que informe se a planinha foi processada com sucesso ou não
@@ -62,9 +62,9 @@ public class ProductRestController {
 		var request = CSVUtils.convert(file.getInputStream(), ImportProductRequest.class);
 
 		var fileRequest = new ImportFileRequest(file.getOriginalFilename(), request.stream().count());
-		this.registerFileImportUseCase.register(fileRequest);
+		var fileId = this.logFileImportUseCase.log(fileRequest);
 
-		this.importProductUseCase.execute(request);
+		this.importProductUseCase.execute(fileId, request);
 		return ResponseEntity.ok().build();
 	}
 

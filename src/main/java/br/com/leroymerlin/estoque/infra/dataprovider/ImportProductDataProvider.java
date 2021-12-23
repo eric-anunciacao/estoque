@@ -2,9 +2,13 @@ package br.com.leroymerlin.estoque.infra.dataprovider;
 
 import java.util.List;
 
+import javax.jms.JMSException;
+import javax.jms.Message;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jms.core.JmsTemplate;
+import org.springframework.jms.core.MessagePostProcessor;
 import org.springframework.stereotype.Component;
 
 import br.com.leroymerlin.estoque.domain.dto.ImportProductDto;
@@ -23,10 +27,21 @@ class ImportProductDataProvider implements ImportProductGateway {
 	}
 
 	@Override
-	public void sendToQueue(List<ImportProductDto> products) {
+	public void sendToQueue(Long fileId, List<ImportProductDto> products) {
 		if (CollectionUtils.isNotEmpty(products)) {
-			products.stream().forEach(p -> this.jmsTemplate.convertAndSend(queueName, p.toString()));
+			products.stream()
+					.forEach(p -> this.jmsTemplate.convertAndSend(queueName, p.toString(), getProperties(fileId)));
 		}
+	}
+
+	private MessagePostProcessor getProperties(Long fileId) {
+		return new MessagePostProcessor() {
+			@Override
+			public Message postProcessMessage(Message message) throws JMSException {
+				message.setLongProperty("file_id", fileId);
+				return message;
+			}
+		};
 	}
 
 }

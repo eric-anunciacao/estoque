@@ -6,6 +6,6 @@ import br.com.leroymerlin.estoque.usecase.request.ImportProductRequest;
 
 public interface ImportProductUseCase {
 
-	void execute(List<ImportProductRequest> request);
+	void execute(Long fileId, List<ImportProductRequest> request);
 
 }
