@@ -11,12 +11,6 @@ public class SaveFileDto {
 		this.totalRecords = totalRecords;
 	}
 
-	public SaveFileDto(String name, long totalRecords, long persistedRecords) {
-		this.name = name;
-		this.totalRecords = totalRecords;
-		this.persistedRecords = persistedRecords;
-	}
-
 	public String getName() {
 		return name;
 	}

@@ -41,6 +41,7 @@ public class ProductListener {
 
 		try {
 			LOGGER.info("Consuming message: {}", message);
+			Thread.sleep(1000); // para testar o endpoint que retorna o status do arquivo
 
 			var request = ObjectMapperUtils.MAPPER.readValue(message, SaveProductRequest.class);
 			this.saveProductUseCase.save(request);

@@ -77,7 +77,7 @@ class ProductRestControllerTest {
 		var response = restTemplate.postForEntity(getFileBaseUrl(), entity, String.class);
 
 		assertNotNull(response);
-		assertEquals(HttpStatus.OK, response.getStatusCode());
+		assertEquals(HttpStatus.CREATED, response.getStatusCode());
 	}
 
 	@Test
