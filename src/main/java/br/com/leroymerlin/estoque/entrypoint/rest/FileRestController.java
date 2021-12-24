@@ -19,7 +19,13 @@ import br.com.leroymerlin.estoque.usecase.ImportProductUseCase;
 import br.com.leroymerlin.estoque.usecase.LogFileImportUseCase;
 import br.com.leroymerlin.estoque.usecase.request.ImportFileRequest;
 import br.com.leroymerlin.estoque.usecase.request.ImportProductRequest;
+import br.com.leroymerlin.estoque.usecase.response.FindFileStatusResponse;
 import br.com.leroymerlin.estoque.usecase.response.ImportProductResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 @RestController
 @RequestMapping("/files")
@@ -36,6 +42,9 @@ public class FileRestController {
 		this.findFileStatusUseCase = findFileStatusUseCase;
 	}
 
+	@Operation(summary = "Importar planilha de produtos")
+	@ApiResponse(responseCode = "201", description = "Arquivo importado com sucesso", content = {
+			@Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ImportProductResponse.class)) })
 	@PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Object> upload(@RequestParam("file") MultipartFile file) throws IOException {
 		var request = CSVUtils.convert(file.getInputStream(), ImportProductRequest.class);
@@ -48,6 +57,10 @@ public class FileRestController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(new ImportProductResponse(fileId, records));
 	}
 
+	@Operation(summary = "Consultar o status de um arquivo importado")
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Status do arquivo encontrado", content = {
+			@Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = FindFileStatusResponse.class)) }),
+			@ApiResponse(responseCode = "404", description = "Arquivo não encontrado para o ID informado", content = @Content) })
 	@GetMapping(path = "/{id}/status", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Object> status(@PathVariable("id") Long id) {
 		return ResponseEntity.ok(this.findFileStatusUseCase.status(id));

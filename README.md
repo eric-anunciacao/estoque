@@ -41,3 +41,4 @@ Utilizando o Docker, é possível criar a estrutura de banco de dados e levantar
 2. Acessar o diretório principal do projeto (onde encontra-se o arquivo `docker-compose.yaml`)
 3. Executar o comando `docker-compose up --build` para iniciar a aplicação
 4. Ao concluir o passo anterior, você poderá testar o acesso da aplicação utilizando a Collection do Postman `estoque.postman_collection.json` que encontra-se no diretório raiz do projeto.
+5. Para consultar os detalhes de cada endpoint no Swagger, acessar a URL: `http://localhost:8080/swagger-ui.html`
