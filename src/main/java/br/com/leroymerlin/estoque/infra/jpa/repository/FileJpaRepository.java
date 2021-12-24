@@ -12,7 +12,7 @@ import br.com.leroymerlin.estoque.infra.jpa.entity.FileJpa;
 public interface FileJpaRepository extends CrudRepository<FileJpa, Long> {
 
 	@Modifying
-	@Query("UPDATE FileJpa f SET f.persistedRecords = (NVL(f.persistedRecords, 0) + 1) WHERE f.id = :id")
+	@Query("UPDATE FileJpa f SET f.persistedRecords = (IFNULL(f.persistedRecords, 0) + 1) WHERE f.id = :id")
 	void incrementPersistedRecordsFor(@Param("id") Long id);
 
 	@Query("SELECT CASE WHEN f.totalRecords = f.persistedRecords THEN 'PROCESSED' "
