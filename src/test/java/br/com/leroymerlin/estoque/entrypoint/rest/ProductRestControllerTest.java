@@ -3,6 +3,7 @@ package br.com.leroymerlin.estoque.entrypoint.rest;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 
 import org.junit.jupiter.api.BeforeAll;
@@ -21,6 +22,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
@@ -29,6 +31,8 @@ import org.springframework.util.MultiValueMap;
 
 import br.com.leroymerlin.estoque.usecase.request.PartialUpdateProductRequest;
 import br.com.leroymerlin.estoque.usecase.request.UpdateProductRequest;
+import br.com.leroymerlin.estoque.usecase.response.FindFileStatusResponse;
+import br.com.leroymerlin.estoque.usecase.response.ImportProductResponse;
 import br.com.leroymerlin.estoque.usecase.response.ProductResponse;
 
 @ActiveProfiles("test")
@@ -65,16 +69,7 @@ class ProductRestControllerTest {
 	@Test
 	@Order(2)
 	void whenFileUploadedThenVerifyStatus() throws Exception {
-		var headers = new HttpHeaders();
-		headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-
-		var body = new LinkedMultiValueMap<String, Object>();
-		var contentStream = this.getClass().getClassLoader().getResourceAsStream("products.csv");
-		var file = new MockMultipartFile("file", "file", "text/csv", contentStream);
-		body.add("file", file.getResource());
-
-		var entity = new HttpEntity<MultiValueMap<String, Object>>(body, headers);
-		var response = restTemplate.postForEntity(getFileBaseUrl(), entity, String.class);
+		var response = shouldUpload("products.csv");
 
 		assertNotNull(response);
 		assertEquals(HttpStatus.CREATED, response.getStatusCode());
@@ -173,6 +168,60 @@ class ProductRestControllerTest {
 
 		assertNotNull(response);
 		assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+	}
+
+	@Test
+	@Order(10)
+	void shouldReturnFileStatus() throws InterruptedException {
+		validateFileStatus(1L, "PROCESSING");
+
+		Thread.sleep(10000);
+
+		validateFileStatus(1L, "PROCESSED");
+	}
+
+	@Test
+	@Order(11)
+	void shouldReturnFileWithErrorStatus() throws Exception {
+		var response = shouldUpload("products_with_error.csv");
+
+		assertNotNull(response);
+		assertEquals(HttpStatus.CREATED, response.getStatusCode());
+
+		validateFileStatus(response.getBody().getFileId(), "PROCESSING");
+
+		Thread.sleep(3000);
+
+		validateFileStatus(response.getBody().getFileId(), "PROCESSED_WITH_ERROR");
+	}
+
+	private ResponseEntity<ImportProductResponse> shouldUpload(String filename) throws IOException {
+		var headers = new HttpHeaders();
+		headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+		var body = new LinkedMultiValueMap<String, Object>();
+		var contentStream = this.getClass().getClassLoader().getResourceAsStream(filename);
+		var file = new MockMultipartFile("file", "file", "text/csv", contentStream);
+		body.add("file", file.getResource());
+
+		var entity = new HttpEntity<MultiValueMap<String, Object>>(body, headers);
+		return restTemplate.postForEntity(getFileBaseUrl(), entity, ImportProductResponse.class);
+	}
+
+	private void validateFileStatus(Long id, String expectedStatus) {
+		var response = findFileStatus(id);
+
+		var body = response.getBody();
+		assertNotNull(body);
+		assertEquals(HttpStatus.OK, response.getStatusCode());
+		assertEquals(expectedStatus, body.getStatus());
+	}
+
+	private ResponseEntity<FindFileStatusResponse> findFileStatus(Long id) {
+		var entity = new HttpEntity<String>(null, new HttpHeaders());
+		var uri = String.format("/%d/status", id);
+		var url = getFileBaseUrl().concat(uri);
+		return restTemplate.exchange(url, HttpMethod.GET, entity, FindFileStatusResponse.class);
 	}
 
 	private String getProductBaseUrl() {

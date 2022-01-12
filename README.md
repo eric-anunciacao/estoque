@@ -23,7 +23,7 @@ Como boas práticas de desenvolvimento, é possível identificar:
 * A maioria dos métodos não possuem mais do que 10 linhas de código;
 * A aplicação foi desenvolvida seguindo o TDD;
 
-Os testes unitários e integrados estão sendo executados com o banco de dados H2 e possuem uma cobertura de código de 95%. Em alguns casos, foi utilizado o Mockito para simular o retorno dos métodos.
+Os testes unitários e integrados estão sendo executados com o banco de dados H2 e possuem uma cobertura de código de 89.3%. Em alguns casos, foi utilizado o Mockito para simular o retorno dos métodos.
 
 ## Pré-requisitos
 

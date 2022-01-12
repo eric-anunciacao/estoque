@@ -59,4 +59,8 @@ public class SaveProductRequest {
 		this.category = category;
 	}
 
+	public boolean hasValidId() {
+		return this.lm != null && this.lm > 0;
+	}
+
 }
