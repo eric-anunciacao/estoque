@@ -9,7 +9,7 @@
 		<version>2.6.1</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>br.com.leroymerlin</groupId>
+	<groupId>br.com.easys</groupId>
 	<artifactId>estoque</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>estoque</name>
